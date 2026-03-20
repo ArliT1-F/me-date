@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Arli</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0a0a;--surface:#1a1010;--surface2:#231515;--border:#2e1e1e;--accent:#ff6b6b;--pink:#ff85a1;--accent2:#ff9a3c;--green:#22c55e;--yellow:#facc15;--text:#f5eeee;--muted:#9a7878;--danger:#ef4444}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh}
+/* LOGIN */
+#login-screen{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+#login-screen.hidden{display:none}
+.login-card{background:var(--surface);border:1.5px solid var(--border);border-radius:24px;padding:36px 28px;max-width:360px;width:100%;text-align:center}
+.login-emoji{font-size:48px;margin-bottom:16px;display:block}
+.login-card h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:8px}
+.login-card p{color:var(--muted);font-size:13px;margin-bottom:28px;line-height:1.6}
+#pw-input{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;padding:14px 16px;outline:none;text-align:center;letter-spacing:4px;-webkit-appearance:none;transition:border-color .2s}
+#pw-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,107,.15)}
+#pw-input.wrong{border-color:var(--danger)!important;animation:shake .4s ease}
+#login-btn{width:100%;margin-top:14px;padding:14px;background:linear-gradient(135deg,var(--accent),var(--pink));border:none;border-radius:12px;color:#fff;font-weight:600;font-size:15px;cursor:pointer}
+#pw-error{color:var(--danger);font-size:12px;margin-top:8px;display:none}
+#pw-error.show{display:block}
+/* DASHBOARD */
+#dashboard{display:none;padding:24px 14px 100px;max-width:900px;margin:0 auto}
+#dashboard.show{display:block}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.topbar h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;font-style:italic}
+.pop{background:linear-gradient(135deg,var(--accent),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.outline-btn{background:none;border:1.5px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:10px;cursor:pointer;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.outline-btn:hover{border-color:var(--accent);color:var(--accent)}
+.danger-btn{background:none;border:1.5px solid var(--danger);color:var(--danger);padding:8px 14px;border-radius:10px;cursor:pointer;font-size:12px;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.danger-btn:hover{background:rgba(239,68,68,.1)}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+@media(min-width:480px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:14px;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase}
+/* SEARCH + FILTERS */
+.controls{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+#search-input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;padding:12px 16px;outline:none;transition:border-color .2s}
+#search-input:focus{border-color:var(--accent)}
+#search-input::placeholder{color:var(--muted)}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filter-btn{padding:7px 14px;border-radius:40px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;white-space:nowrap}
+.filter-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(255,107,107,.08)}
+/* CARD */
+.app-card{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:18px;margin-bottom:12px;transition:border-color .2s;animation:fadeIn .3s ease both}
+.app-card:hover{border-color:rgba(255,107,107,.3)}
+.app-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.app-name{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;font-style:italic}
+.ts{font-size:11px;color:var(--muted);margin-top:3px}
+/* TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.tag-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.tag-red{background:rgba(239,68,68,.12);color:var(--danger);border:1px solid rgba(239,68,68,.25)}
+.tag-yellow{background:rgba(250,204,21,.12);color:var(--yellow);border:1px solid rgba(250,204,21,.25)}
+.tag-pink{background:rgba(255,133,161,.12);color:var(--pink);border:1px solid rgba(255,133,161,.25)}
+.tag-gray{background:rgba(154,120,120,.12);color:var(--muted);border:1px solid rgba(154,120,120,.25)}
+.tag-blue{background:rgba(96,165,250,.12);color:#60a5fa;border:1px solid rgba(96,165,250,.25)}
+/* LOC */
+.loc-info{background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;font-size:12px;color:var(--muted);margin:10px 0;line-height:1.7}
+.loc-info strong{color:var(--text)}
+/* COMPAT BAR */
+.compat-bar{margin:12px 0}
+.compat-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
+.compat-track{height:7px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.compat-fill{height:100%;border-radius:4px;transition:width .5s ease}
+/* BIO */
+.app-bio{font-size:13px;color:var(--muted);line-height:1.7;font-style:italic;border-left:3px solid var(--border);padding-left:12px;margin:10px 0}
+/* CONTACTS */
+.contact-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.contact-link{display:inline-flex;align-items:center;gap:5px;background:rgba(255,107,107,.08);border:1.5px solid rgba(255,107,107,.2);color:var(--accent);padding:7px 12px;border-radius:10px;font-size:12px;text-decoration:none;font-weight:500;transition:background .15s}
+.contact-link:hover{background:rgba(255,107,107,.18)}
+/* EXPAND */
+.expand-btn{width:100%;background:none;border:1.5px solid var(--border);border-radius:10px;color:var(--muted);padding:8px;font-size:12px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;margin-top:10px;transition:all .15s}
+.expand-btn:hover{border-color:var(--accent);color:var(--accent)}
+.app-detail{display:none;margin-top:14px;border-top:1.5px solid var(--border);padding-top:14px}
+.app-detail.open{display:block}
+.detail-block{margin-bottom:14px}
+.detail-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:8px}
+.detail-val{font-size:13px;color:var(--text);line-height:1.7;background:var(--surface2);border-radius:10px;padding:11px 13px}
+.q-item{margin-bottom:10px}
+.q-q{font-size:11px;color:var(--pink);font-weight:600;margin-bottom:4px;font-style:italic}
+/* STATUS */
+.status-select{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;padding:6px 10px;outline:none;cursor:pointer;transition:border-color .2s}
+.status-select:focus{border-color:var(--accent)}
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-emoji{font-size:52px;display:block;margin-bottom:14px}
+/* LOADING */
+#loading{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+/* ANIMS */
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <span class="login-emoji">🔐</span>
+    <h1>Admin Access</h1>
+    <p>This is private. Enter the password to see your applicants.</p>
+    <input type="password" id="pw-input" placeholder="••••••••" maxlength="40">
+    <button id="login-btn" onclick="tryLogin()">Enter Dashboard</button>
+    <div id="pw-error">Wrong password. Try again.</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="topbar">
+    <div>
+      <h1>Arli's <span class="pop">Dashboard</span> 💌</h1>
+      <p style="color:var(--muted);font-size:12px;margin-top:3px">All applicants — live from Supabase</p>
+    </div>
+    <div class="top-actions">
+      <button class="outline-btn" onclick="loadApps()">↻ Refresh</button>
+      <button class="outline-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats-row">
+    <div class="stat"><div class="stat-num" id="st-total">—</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" id="st-albania">—</div><div class="stat-label">In Albania 🇦🇱</div></div>
+    <div class="stat"><div class="stat-num" id="st-abroad">—</div><div class="stat-label">Abroad 🌍</div></div>
+    <div class="stat"><div class="stat-num" id="st-compat">—</div><div class="stat-label">Avg Compat</div></div>
+  </div>
+
+  <div class="controls">
+    <input type="text" id="search-input" placeholder="🔍  Search by name, city, email…" oninput="renderApps()">
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('albania',this)">🇦🇱 In Albania</button>
+      <button class="filter-btn" onclick="setFilter('high',this)">⭐ 70%+ match</button>
+      <button class="filter-btn" onclick="setFilter('new',this)">🆕 New only</button>
+      <button class="filter-btn" onclick="setFilter('interested',this)">💚 Interested</button>
+    </div>
+  </div>
+
+  <div id="loading">Loading applications…</div>
+  <div id="apps-list"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIG — same values as index.html
+// ══════════════════════════════════════════
+const SUPABASE_URL      = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const ADMIN_PASSWORD    = 'karilales1A.';
+
+let allApps = [];
+let currentFilter = 'all';
+
+// ── LOGIN ──
+document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') tryLogin(); });
+
+function tryLogin() {
+  if (document.getElementById('pw-input').value === ADMIN_PASSWORD) {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('dashboard').classList.add('show');
+    loadApps();
+  } else {
+    const inp = document.getElementById('pw-input');
+    inp.classList.add('wrong');
+    document.getElementById('pw-error').classList.add('show');
+    setTimeout(() => inp.classList.remove('wrong'), 500);
+    inp.value = '';
+  }
+}
+
+function logout() {
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('dashboard').classList.remove('show');
+  document.getElementById('pw-input').value = '';
+}
+
+// ── FETCH FROM SUPABASE ──
+async function loadApps() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('apps-list').innerHTML = '';
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/applications?select=*&order=created_at.desc`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+    if (!res.ok) throw new Error(res.status);
+    allApps = await res.json();
+    updateStats();
+    renderApps();
+  } catch(e) {
+    document.getElementById('loading').innerHTML = `<span style="color:var(--danger)">⚠️ Could not load data. Check your Supabase URL and key.<br><small>${e}</small></span>`;
+  }
+}
+
+// ── UPDATE STATUS IN SUPABASE ──
+async function updateStatus(id, status) {
+  await fetch(`${SUPABASE_URL}/rest/v1/applications?id=eq.${id}`, {
+    method: 'PATCH',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({ status })
+  });
+  const app = allApps.find(a => a.id === id);
+  if (app) app.status = status;
+  updateStats();
+}
+
+// ── COMPAT SCORE ──
+// Punishes not being in Albania at time of submission, not nationality
+function calcCompat(a) {
+  let score = 45;
+  // Location: in Albania at submission time?
+  if (a.in_albania === 'yes') score += 22;
+  else if (a.in_albania === 'unknown') score += 0;
+  else score -= 10;
+  // Touch / physical touch love language
+  const langs = a.love_langs || [];
+  if (langs.some(l => l.toLowerCase().includes('touch') || l.toLowerCase().includes('preki'))) score += 14;
+  // Affection level (favor higher)
+  const aff = parseInt(a.affection) || 5;
+  score += Math.round((aff - 5) * 1.8);
+  // Relationship goal
+  const rg = (a.rel_goal || '').toLowerCase();
+  if (rg.includes('serious') || rg.includes('serioze') || rg.includes('long')) score += 8;
+  else if (rg.includes('open') || rg.includes('hapur')) score += 4;
+  // Quality of answers (filled in qs with >30 chars = effort)
+  const qs = [a.q_first_meeting,a.q_physical_touch,a.q_rainy_evening,a.q_different,a.q_flirty,a.q_lesson];
+  score += qs.filter(q => q && q.length > 30).length * 2;
+  // Bio quality
+  if (a.bio && a.bio.length > 80) score += 3;
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+function compatColor(s) { return s >= 70 ? 'var(--green)' : s >= 45 ? 'var(--yellow)' : 'var(--danger)'; }
+
+// ── STATS ──
+function updateStats() {
+  const total = allApps.length;
+  const albania = allApps.filter(a => a.in_albania === 'yes').length;
+  const abroad = allApps.filter(a => a.in_albania === 'no').length;
+  const compats = allApps.map(calcCompat);
+  const avg = compats.length ? Math.round(compats.reduce((s,c)=>s+c,0)/compats.length) : null;
+  document.getElementById('st-total').textContent = total;
+  document.getElementById('st-albania').textContent = albania;
+  document.getElementById('st-abroad').textContent = abroad;
+  document.getElementById('st-compat').textContent = avg != null ? avg+'%' : '—';
+}
+
+// ── FILTER ──
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderApps();
+}
+
+// ── RENDER ──
+function renderApps() {
+  document.getElementById('loading').style.display = 'none';
+  const list = document.getElementById('apps-list');
+  const search = document.getElementById('search-input').value.toLowerCase();
+
+  let apps = allApps.filter(a => {
+    if (search) {
+      const hay = `${a.name} ${a.city_stated} ${a.loc_country} ${a.email} ${a.instagram}`.toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    if (currentFilter === 'albania') return a.in_albania === 'yes';
+    if (currentFilter === 'high') return calcCompat(a) >= 70;
+    if (currentFilter === 'new') return a.status === 'new' || !a.status;
+    if (currentFilter === 'interested') return a.status === 'interested';
+    return true;
+  });
+
+  if (!apps.length) {
+    list.innerHTML = `<div class="empty"><span class="empty-emoji">${allApps.length===0?'📭':'🔍'}</span><p>${allApps.length===0?'No applications yet. Share your link! ✨':'No results for this filter.'}</p></div>`;
+    return;
+  }
+
+  list.innerHTML = apps.map((a, i) => {
+    const compat = calcCompat(a);
+    const inAL = a.in_albania === 'yes';
+    const ts = a.created_at ? new Date(a.created_at).toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'}) : '?';
+    const hobbies = (a.hobbies||[]).join(', ') || '—';
+    const langs = (a.love_langs||[]).join(', ') || '—';
+
+    const locTag = inAL
+      ? `<span class="tag tag-green">🇦🇱 In Albania ✓</span>`
+      : a.in_albania === 'no'
+      ? `<span class="tag tag-red">🌍 ${a.loc_country||'?'} — not in Albania</span>`
+      : `<span class="tag tag-gray">📍 Location unknown</span>`;
+
+    const compatTag = compat >= 70
+      ? `<span class="tag tag-green">⭐ ${compat}% match</span>`
+      : compat >= 45
+      ? `<span class="tag tag-yellow">🤔 ${compat}% match</span>`
+      : `<span class="tag tag-red">❌ ${compat}% match</span>`;
+
+    const statusTag = {
+      'interested': `<span class="tag tag-green">💚 Interested</span>`,
+      'maybe': `<span class="tag tag-yellow">🤔 Maybe</span>`,
+      'pass': `<span class="tag tag-red">❌ Pass</span>`,
+    }[a.status] || `<span class="tag tag-blue">🆕 New</span>`;
+
+    const contacts = [];
+    if (a.instagram) contacts.push(`<a class="contact-link" href="https://instagram.com/${a.instagram.replace('@','')}" target="_blank">📸 ${a.instagram}</a>`);
+    if (a.phone) contacts.push(`<a class="contact-link" href="https://wa.me/${(a.phone||'').replace(/[^0-9]/g,'')}" target="_blank">📱 ${a.phone}</a>`);
+    if (a.email) contacts.push(`<a class="contact-link" href="mailto:${a.email}">✉️ ${a.email}</a>`);
+
+    const qPairs = [
+      ['First meeting move', a.q_first_meeting],
+      ['Physical touch meaning', a.q_physical_touch],
+      ['Perfect rainy evening', a.q_rainy_evening],
+      ["What makes them different", a.q_different],
+      ['Secretly finds attractive', a.q_flirty],
+      ['Lesson from past relationship', a.q_lesson],
+    ].filter(([,v]) => v && v.length > 0);
+
+    return `<div class="app-card" style="animation-delay:${Math.min(i,10)*0.04}s">
+      <div class="app-header">
+        <div>
+          <div class="app-name">${esc(a.name)||'Anonymous'}, ${a.age||'?'}</div>
+          <div class="ts">Submitted: ${ts} · ${a.lang_used==='sq'?'🇦🇱 SQ':'🇬🇧 EN'}</div>
+          <div class="tags">
+            ${locTag}
+            ${compatTag}
+            ${statusTag}
+            ${a.rel_goal?`<span class="tag tag-pink">💞 ${esc(a.rel_goal)}</span>`:''}
+            ${a.height?`<span class="tag tag-gray">📏 ${esc(a.height)}</span>`:''}
+          </div>
+        </div>
+        <div>
+          <select class="status-select" onchange="updateStatus(${a.id},this.value)" title="Set status">
+            <option value="new" ${(!a.status||a.status==='new')?'selected':''}>🆕 New</option>
+            <option value="interested" ${a.status==='interested'?'selected':''}>💚 Interested</option>
+            <option value="maybe" ${a.status==='maybe'?'selected':''}>🤔 Maybe</option>
+            <option value="pass" ${a.status==='pass'?'selected':''}>❌ Pass</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="loc-info">
+        📍 <strong>Detected location:</strong> ${esc(a.loc_city_auto)||'?'}, ${esc(a.loc_country)||'?'} &nbsp;·&nbsp;
+        <strong>IP:</strong> ${esc(a.loc_ip)||'?'} &nbsp;·&nbsp;
+        <strong>Coords:</strong> ${esc(a.loc_coords)||'N/A'} &nbsp;·&nbsp;
+        <strong>Stated:</strong> ${esc(a.city_stated)||'?'}
+      </div>
+
+      <div class="compat-bar">
+        <div class="compat-row">
+          <span>Compatibility</span>
+          <span style="color:${compatColor(compat)};font-weight:700">${compat}%</span>
+        </div>
+        <div class="compat-track">
+          <div class="compat-fill" style="width:${compat}%;background:${compatColor(compat)}"></div>
+        </div>
+      </div>
+
+      ${a.bio?`<div class="app-bio">"${esc(a.bio)}"</div>`:''}
+
+      <div class="contact-row">${contacts.join('')||'<span style="font-size:12px;color:var(--muted)">No contact info provided</span>'}</div>
+
+      <button class="expand-btn" onclick="toggleDetail(this)">See full application ▼</button>
+
+      <div class="app-detail">
+        <div class="detail-block">
+          <div class="detail-title">Hobbies & Vibe</div>
+          <div class="detail-val">
+            <strong>Hobbies:</strong> ${esc(hobbies)}<br>
+            ${a.hobbies_other?`<strong>Also:</strong> ${esc(a.hobbies_other)}<br>`:''}
+            <strong>Vibe:</strong> ${esc(a.vibe)||'—'}
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <div class="detail-title">Love & Connection</div>
+          <div class="detail-val">
+            <strong>Love languages:</strong> ${esc(langs)}<br>
+            <strong>Affection (1–10):</strong> ${a.affection||'?'}<br>
+            <strong>Public Display of Affection (1–10):</strong> ${a.pda||'?'}<br>
+            <strong>Looking for:</strong> ${esc(a.rel_goal)||'—'}<br>
+            ${a.dealbreakers?`<strong>Dealbreakers:</strong> ${esc(a.dealbreakers)}`:''}
+          </div>
+        </div>
+
+        ${qPairs.length ? `<div class="detail-block">
+          <div class="detail-title">Their Answers 🔥</div>
+          ${qPairs.map(([q,ans])=>`<div class="q-item"><div class="q-q">${q}</div><div class="detail-val">${esc(ans)}</div></div>`).join('')}
+        </div>`:''}
+
+        ${a.extra?`<div class="detail-block">
+          <div class="detail-title">Final Words</div>
+          <div class="detail-val" style="color:var(--pink);font-style:italic">"${esc(a.extra)}"</div>
+        </div>`:''}
+
+        ${a.photo_link?`<div class="detail-block">
+          <div class="detail-title">Photo / Profile</div>
+          <div class="detail-val"><a href="${esc(a.photo_link)}" target="_blank" style="color:var(--accent)">${esc(a.photo_link)}</a></div>
+        </div>`:''}
+
+        <div class="detail-block">
+          <div class="detail-title">Contact preference</div>
+          <div class="detail-val">${esc(a.contact_pref)||'—'}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleDetail(btn) {
+  const detail = btn.nextElementSibling;
+  const open = detail.classList.toggle('open');
+  btn.textContent = open ? 'Hide details ▲' : 'See full application ▼';
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
