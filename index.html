@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Arli — Apliko 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fef6ee;--surface:#fff;--surface2:#fdf0e4;--border:#f0d9c8;--accent:#ff6b6b;--pink:#ff85a1;--accent2:#ff9a3c;--purple:#c084fc;--text:#1a1010;--muted:#8b6f6f;--danger:#ef4444;--green:#22c55e}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 15% 20%,rgba(255,107,107,.12) 0%,transparent 40%),radial-gradient(circle at 85% 10%,rgba(255,133,161,.15) 0%,transparent 35%),radial-gradient(circle at 70% 70%,rgba(192,132,252,.1) 0%,transparent 40%),radial-gradient(circle at 20% 80%,rgba(45,212,191,.1) 0%,transparent 35%);pointer-events:none;z-index:0}
+.shape{position:fixed;pointer-events:none;z-index:0;opacity:.15;border-radius:50%;animation:float linear infinite}
+.s1{width:90px;height:90px;background:var(--accent);top:4%;right:6%;animation-duration:13s}
+.s2{width:55px;height:55px;background:var(--pink);top:38%;left:2%;animation-duration:17s;animation-delay:-5s}
+.s3{width:40px;height:40px;background:var(--purple);bottom:22%;right:4%;animation-duration:11s;animation-delay:-8s}
+.s4{width:65px;height:65px;background:var(--accent2);bottom:8%;left:8%;animation-duration:15s;animation-delay:-3s}
+/* LANG */
+.lang-toggle{position:fixed;top:14px;right:14px;z-index:50;display:flex;background:var(--surface);border:1.5px solid var(--border);border-radius:40px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.lang-btn{padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.lang-btn.active{background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff}
+/* HERO */
+.hero{position:relative;z-index:1;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:70px 28px 70px}
+.hero-emoji{font-size:60px;margin-bottom:16px;display:block;animation:bounce 2.2s ease infinite}
+.hero-tag{display:inline-block;background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;padding:7px 18px;border-radius:40px;margin-bottom:24px;box-shadow:0 4px 20px rgba(255,107,107,.35)}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(44px,12vw,72px);font-weight:700;line-height:1.05}
+.pop{font-style:italic;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:15px;color:var(--muted);line-height:1.75;max-width:310px;margin:18px auto 0}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff;text-decoration:none;padding:16px 32px;border-radius:50px;font-weight:600;font-size:16px;box-shadow:0 8px 28px rgba(255,107,107,.4);transition:transform .15s;margin-top:34px}
+.cta-btn:active{transform:scale(.97)}
+.scroll-arrow{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-size:26px;animation:bounce 2s ease infinite;color:var(--accent);opacity:.65}
+/* SECTION */
+.sec-head{position:relative;z-index:1;padding:0 18px;margin:32px 0 10px;display:flex;align-items:center;gap:12px}
+.sec-num{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:11px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;font-style:italic}
+.sec-emoji{font-size:20px}
+/* FORM */
+.form-outer{position:relative;z-index:1;padding:0 14px 100px;max-width:540px;margin:0 auto}
+.card{background:var(--surface);border-radius:24px;padding:22px 18px;margin-bottom:12px;border:1.5px solid var(--border);box-shadow:0 2px 20px rgba(255,107,107,.05)}
+.card-note{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:18px;background:var(--surface2);border-radius:10px;padding:10px 12px;border-left:3px solid var(--pink)}
+label.lbl{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:7px;margin-top:18px}
+label.lbl:first-child{margin-top:0}
+input[type=text],input[type=email],input[type=number],textarea,select{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:14px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:400;padding:13px 16px;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,107,107,.12);background:#fff}
+textarea{resize:vertical;min-height:86px;line-height:1.65}
+select option{background:#fff}
+.invalid{border-color:var(--danger)!important;box-shadow:0 0 0 3px rgba(239,68,68,.1)!important}
+.field-error{font-size:11px;color:var(--danger);margin-top:5px;display:none}
+.field-error.show{display:block}
+.char-count{text-align:right;font-size:11px;color:var(--muted);margin-top:4px}
+/* PILLS */
+.pill-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.pill-item{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1.5px solid var(--border);border-radius:40px;padding:8px 14px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;user-select:none;white-space:nowrap}
+.pill-item input{display:none}
+.pill-item:has(input:checked){background:linear-gradient(135deg,rgba(255,107,107,.15),rgba(255,133,161,.15));border-color:var(--accent);color:var(--accent)}
+/* RANGE */
+.range-wrap{margin-top:4px}
+input[type=range]{width:100%;height:5px;background:var(--border);border-radius:4px;outline:none;cursor:pointer;-webkit-appearance:none;border:none;padding:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;background:#fff;border-radius:50%;border:3px solid var(--accent);box-shadow:0 2px 10px rgba(255,107,107,.35);cursor:pointer}
+.range-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px}
+.range-val{text-align:center;font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--accent);margin-top:2px}
+/* LOC */
+.loc-box{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--muted)}
+.loc-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s}
+.loc-dot.ok{background:var(--green);box-shadow:0 0 8px rgba(34,197,94,.5)}
+.loc-dot.err{background:var(--danger)}
+/* Q CARDS */
+.q-card{background:linear-gradient(135deg,rgba(255,107,107,.05),rgba(192,132,252,.05));border:1.5px solid rgba(255,107,107,.18);border-radius:16px;padding:18px;margin-bottom:12px}
+.q-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--pink);font-weight:600;margin-bottom:8px}
+.q-text{font-family:'Playfair Display',serif;font-style:italic;font-size:16px;color:var(--text);margin-bottom:12px;line-height:1.55}
+.q-hint{font-size:11px;color:var(--muted);margin-top:5px}
+.q-hint.warn{color:var(--danger)}
+/* SUBMIT */
+#submitBtn{width:100%;padding:18px;background:linear-gradient(135deg,var(--accent),var(--pink));border:none;border-radius:18px;color:#fff;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;font-style:italic;cursor:pointer;box-shadow:0 8px 32px rgba(255,107,107,.4);transition:transform .15s;margin-top:28px}
+#submitBtn:active{transform:scale(.98)}
+#submitBtn:disabled{opacity:.6;cursor:not-allowed}
+.submit-note{text-align:center;font-size:11px;color:var(--muted);margin-top:10px}
+/* SUCCESS */
+#success-screen{display:none;position:fixed;inset:0;z-index:200;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
+#success-screen.show{display:flex}
+.success-emoji{font-size:76px;animation:bounce 1.5s ease infinite;margin-bottom:20px}
+#success-screen h2{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:var(--accent);margin-bottom:12px}
+#success-screen p{color:var(--muted);font-size:15px;line-height:1.8;max-width:290px}
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:#1a1010;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;z-index:300;transition:transform .3s;box-shadow:0 4px 20px rgba(0,0,0,.25);max-width:88vw;text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+/* ANIMS */
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes float{0%{transform:translateY(0) rotate(0deg)}33%{transform:translateY(-22px) rotate(5deg)}66%{transform:translateY(10px) rotate(-3deg)}100%{transform:translateY(0) rotate(0deg)}}
+</style>
+</head>
+<body>
+<div class="shape s1"></div><div class="shape s2"></div><div class="shape s3"></div><div class="shape s4"></div>
+<div id="toast"></div>
+
+<div class="lang-toggle">
+  <button class="lang-btn active" onclick="setLang('sq')">🇦🇱 SQ</button>
+  <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+</div>
+
+<div id="success-screen">
+  <div class="success-emoji">💌</div>
+  <h2 id="s-title">Aplikimi u dërgua!</h2>
+  <p id="s-body">Arli do të shqyrtojë aplikimin tënd dhe do të të kontaktojë nëse ka lidhje të vërtetë. Gishtat e kryqëzuar! 🤞</p>
+</div>
+
+<section class="hero">
+  <span class="hero-emoji">👋</span>
+  <div class="hero-tag" id="hero-tag">Aplikime Private të Hapura</div>
+  <h1 id="hero-h1">Kështu dëshiron të<br>takosh <span class="pop">Arlin?</span></h1>
+  <p class="hero-sub" id="hero-sub">Plotëso këtë siç duhet. Ji i sinqertë, ji tërheqës, bëmë të buzëqesh — dhe ndoshta do të flasim. 😏</p>
+  <a href="#form-start" class="cta-btn" id="hero-cta">Le të fillojmë 💥</a>
+  <div class="scroll-arrow">↓</div>
+</section>
+
+<div class="form-outer" id="form-start">
+<form id="mainForm" novalidate>
+
+  <!-- 01 -->
+  <div class="sec-head"><div class="sec-num">01</div><div class="sec-title" id="s1-title">Bazat</div><div class="sec-emoji">🙋‍♀️</div></div>
+  <div class="card">
+    <label class="lbl" id="l-fname">Emri yt *</label>
+    <input type="text" id="fname" placeholder="Si të quajnë?" maxlength="50" required>
+    <div class="field-error" id="fname-err">Hajde, tregomë të paktën emrin! 😄</div>
+
+    <label class="lbl" id="l-age">Mosha *</label>
+    <input type="number" id="age" placeholder="Sa vjeç je?" min="18" max="55" required>
+    <div class="field-error" id="age-err">Duhet të jesh midis 18 dhe 55.</div>
+
+    <label class="lbl" id="l-city">Nga je? *</label>
+    <input type="text" id="city" placeholder="Qyteti, Vendi" maxlength="80" required>
+    <div class="field-error" id="city-err">Duhet të di nga je!</div>
+
+    <label class="lbl" id="l-loc">Vendndodhja jote aktuale (e zbuluar automatikisht) 📍</label>
+    <div class="loc-box">
+      <div class="loc-dot" id="loc-dot"></div>
+      <span id="loc-text">Duke zbuluar vendndodhjen…</span>
+      <input type="hidden" id="loc-ip"><input type="hidden" id="loc-country">
+      <input type="hidden" id="loc-city-auto"><input type="hidden" id="loc-coords">
+      <input type="hidden" id="loc-in-albania" value="unknown">
+    </div>
+
+    <label class="lbl" id="l-height">Gjatësia (opsionale)</label>
+    <input type="text" id="height" placeholder="p.sh. 165 cm" maxlength="20">
+
+    <label class="lbl" id="l-bio">Përshkruaj veten në disa fjali *</label>
+    <textarea id="bio" placeholder="Energjia jote, vibrat e tua — çfarë të bën TY. Mos u mërzit." maxlength="400" required></textarea>
+    <div class="char-count"><span id="bio-count">0</span>/400</div>
+    <div class="field-error" id="bio-err">Tregomë diçka për veten!</div>
+
+    <label class="lbl" id="l-photo">Foto ose link profili (opsionale)</label>
+    <input type="text" id="photo-link" placeholder="Instagram, link foto…" maxlength="200">
+  </div>
+
+  <!-- 02 -->
+  <div class="sec-head"><div class="sec-num">02</div><div class="sec-title" id="s2-title">Hobi & Vibra</div><div class="sec-emoji">🎉</div></div>
+  <div class="card">
+    <div class="card-note" id="note-hobbies">Sa më specifik, aq më të mira shanset e tua. Përgjigjet gjenerike = skip i menjëhershëm. 😅</div>
+
+    <label class="lbl" id="l-hobbies">Hobi-t tuaja (zgjidh të gjitha)</label>
+    <div class="pill-grid" id="hobby-grid">
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Muzikë|Music"> 🎵 <span class="h-sq">Muzikë</span><span class="h-en" style="display:none">Music</span></label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Udhëtime|Travel"> ✈️ <span class="h-sq">Udhëtime</span><span class="h-en" style="display:none">Travel</span></label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Fitness"> 🏋️ Fitness</label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Gatim|Cooking"> 🍳 <span class="h-sq">Gatim</span><span class="h-en" style="display:none">Cooking</span></label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Art"> 🎨 Art</label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Gaming"> 🎮 Gaming</label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Lexim|Reading"> 📚 <span class="h-sq">Lexim</span><span class="h-en" style="display:none">Reading</span></label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Natyrë|Nature"> 🌿 <span class="h-sq">Natyrë</span><span class="h-en" style="display:none">Nature</span></label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Kinema|Cinema"> 🎬 <span class="h-sq">Kinema</span><span class="h-en" style="display:none">Cinema</span></label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Vallëzim|Dancing"> 💃 <span class="h-sq">Vallëzim</span><span class="h-en" style="display:none">Dancing</span></label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Fotografi|Photography"> 📷 <span class="h-sq">Fotografi</span><span class="h-en" style="display:none">Photography</span></label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Natën jashtë|Nightlife"> 🌙 <span class="h-sq">Natën jashtë</span><span class="h-en" style="display:none">Nightlife</span></label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Kafene|Café hopping"> ☕ <span class="h-sq">Kafene</span><span class="h-en" style="display:none">Café hopping</span></label>
+      <label class="pill-item"><input type="checkbox" name="hobby" value="Sport|Sports"> ⚽ <span class="h-sq">Sport</span><span class="h-en" style="display:none">Sports</span></label>
+    </div>
+
+    <label class="lbl" style="margin-top:16px" id="l-hobbies-other">Hobi ose pasione të tjera?</label>
+    <input type="text" id="hobbies-other" placeholder="Çdo gjë tjetër…" maxlength="120">
+
+    <label class="lbl" id="l-vibe">Vibra jote e përgjithshme *</label>
+    <select id="vibe" required>
+      <option value="" id="vibe-placeholder">— Zgjidh atë që të përshtatet —</option>
+      <option id="vibe1">Njeri i shtëpisë, dashuron mbrëmjet e qeta</option>
+      <option id="vibe2">Aventurier, gjithmonë në lëvizje</option>
+      <option id="vibe3">Shpirt shoqëror, dashuron njerëzit</option>
+      <option id="vibe4">Shpirt krijues dhe ekspresiv</option>
+      <option id="vibe5">Ambicioz dhe i vendosur</option>
+      <option id="vibe6">Shpirt i lirë, vështirë të etiketohet</option>
+      <option id="vibe7">Romantik në zemër, dashuron gjërat e vogla</option>
+    </select>
+    <div class="field-error" id="vibe-err">Zgjidh atë që të afrohet!</div>
+  </div>
+
+  <!-- 03 -->
+  <div class="sec-head"><div class="sec-num">03</div><div class="sec-title" id="s3-title">Si dashuron</div><div class="sec-emoji">💞</div></div>
+  <div class="card">
+    <label class="lbl" id="l-lovelang">Gjuha e dashurisë</label>
+    <div class="pill-grid">
+      <label class="pill-item"><input type="checkbox" name="lovelang" value="Prekja fizike|Physical touch"> 🤝 <span class="ll-sq">Prekja fizike</span><span class="ll-en" style="display:none">Physical touch</span></label>
+      <label class="pill-item"><input type="checkbox" name="lovelang" value="Fjalë dashurie|Words of affirmation"> 💬 <span class="ll-sq">Fjalë dashurie</span><span class="ll-en" style="display:none">Words of affirmation</span></label>
+      <label class="pill-item"><input type="checkbox" name="lovelang" value="Kohë cilësore|Quality time"> ⏳ <span class="ll-sq">Kohë cilësore</span><span class="ll-en" style="display:none">Quality time</span></label>
+      <label class="pill-item"><input type="checkbox" name="lovelang" value="Akte shërbimi|Acts of service"> 🛠 <span class="ll-sq">Akte shërbimi</span><span class="ll-en" style="display:none">Acts of service</span></label>
+    </div>
+
+    <label class="lbl" style="margin-top:20px" id="l-affection">Sa dashamirës je? *</label>
+    <div class="range-wrap">
+      <input type="range" id="affection" min="1" max="10" value="5" oninput="updateRange(this,'aff-val')">
+      <div class="range-labels"><span id="aff-low">I/E ftohtë 🐟</span><span id="aff-high">Shumë i/e ngrohtë 🐙</span></div>
+      <div class="range-val" id="aff-val">5</div>
+    </div>
+
+    <label class="lbl" style="margin-top:20px" id="l-pda">Sa rehat je me Shfaqjen Publike të Dashurisë? *</label>
+    <div class="range-wrap">
+      <input type="range" id="pda" min="1" max="10" value="5" oninput="updateRange(this,'pda-val')">
+      <div class="range-labels"><span id="pda-low">Shumë privat 🙈</span><span id="pda-high">Le ta shohë bota 🌍</span></div>
+      <div class="range-val" id="pda-val">5</div>
+    </div>
+
+    <label class="lbl" style="margin-top:20px" id="l-relgoal">Çfarë kërkon? *</label>
+    <select id="relgoal" required>
+      <option value="" id="rg-ph">— Ji i sinqertë —</option>
+      <option id="rg1">Diçka serioze dhe afatgjatë</option>
+      <option id="rg2">Casual por me kuptim</option>
+      <option id="rg3">Ngadalë, të shohim ku shkon</option>
+      <option id="rg4">Miqësi fillimisht, ndoshta më shumë</option>
+      <option id="rg5">Me mendje të hapur, të gjejmë bashkë</option>
+    </select>
+    <div class="field-error" id="relgoal-err">Ji i sinqertë për atë çfarë dëshiron!</div>
+
+    <label class="lbl" id="l-deal">Gjërat që nuk i toleron (opsionale)</label>
+    <textarea id="dealbreakers" placeholder="Çfarë absolutisht nuk funksionon për ty?" maxlength="200"></textarea>
+  </div>
+
+  <!-- 04 -->
+  <div class="sec-head"><div class="sec-num">04</div><div class="sec-title" id="s4-title">Pyetjet e vërteta</div><div class="sec-emoji">🔥</div></div>
+  <div class="card">
+    <div class="card-note" id="note-q">Gjuha ime e dashurisë është <strong>prekja fizike</strong> — këto pyetje më ndihmojnë të kuptoj si lidhesh. Argëtohu me to. 😉</div>
+
+    <div class="q-card">
+      <div class="q-label" id="ql1">Fillimi 🧊</div>
+      <div class="q-text" id="qt1">"Herën e parë që takohemi, çfarë bën — shtrëngim duarsh, përqafim, apo diçka më e guximshme?"</div>
+      <textarea id="q1" placeholder="Ji i sinqertë… ose i tërhequr 😏" maxlength="300"></textarea>
+      <div class="q-hint" id="qh1">Minimum 30 karaktere</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label" id="ql2">Prekja 💫</div>
+      <div class="q-text" id="qt2">"Çfarë do të thotë prekja fizike për ty në një lidhje? Jepma një përgjigje të vërtetë."</div>
+      <textarea id="q2" placeholder="Shko më thellë se e dukshme…" maxlength="300"></textarea>
+      <div class="q-hint" id="qh2">Minimum 30 karaktere</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label" id="ql3">Mbrëmja e qetë 🌙</div>
+      <div class="q-text" id="qt3">"Është një natë me shi, vetëm ne dy. Përshkruaje mbrëmjen tënde perfekte."</div>
+      <textarea id="q3" placeholder="Vizatoje skenën për mua…" maxlength="300"></textarea>
+      <div class="q-hint" id="qh3">Minimum 30 karaktere</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label" id="ql4">Testi i flamurit jeshil ✅</div>
+      <div class="q-text" id="qt4">"Çfarë bën ti që do të bënte të mendoja: okej, ky/kjo është ndryshe?"</div>
+      <textarea id="q4" placeholder="Trego pak veten 😄" maxlength="300"></textarea>
+      <div class="q-hint" id="qh4">Minimum 30 karaktere</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label" id="ql5">Rrëfimi flirtues 💋</div>
+      <div class="q-text" id="qt5">"Çfarë gjen tërheqëse thellë brenda vetes që nuk do ta pranoje në një takim të parë?"</div>
+      <textarea id="q5" placeholder="Ky është një vend i sigurt. Pothuajse. 😈" maxlength="300"></textarea>
+      <div class="q-hint" id="qh5">Minimum 30 karaktere</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-label" id="ql6">E sinqerta 💬</div>
+      <div class="q-text" id="qt6">"Çfarë gjë nga një lidhje e kaluar ke mësuar sinqerisht?"</div>
+      <textarea id="q6" placeholder="Rritja është tërheqëse. Ji i vërtetë." maxlength="300"></textarea>
+      <div class="q-hint" id="qh6">Minimum 30 karaktere</div>
+    </div>
+  </div>
+
+  <!-- 05 -->
+  <div class="sec-head"><div class="sec-num">05</div><div class="sec-title" id="s5-title">Si të kontaktoj</div><div class="sec-emoji">📲</div></div>
+  <div class="card">
+    <div class="card-note" id="note-contact">Ndaj vetëm çfarë ke rehat të ndash. Do të kontaktoj vetëm nëse ka lidhje të vërtetë.</div>
+
+    <label class="lbl" id="l-insta">Instagram (opsionale)</label>
+    <input type="text" id="instagram" placeholder="@username" maxlength="60">
+
+    <label class="lbl" id="l-phone">WhatsApp / Telefon (opsionale)</label>
+    <input type="text" id="phone" placeholder="+355 6X XXX XXXX" maxlength="30">
+
+    <label class="lbl" id="l-email">Adresa e emailit *</label>
+    <input type="email" id="email" placeholder="emaili@yt.com" required>
+    <div class="field-error" id="email-err">Nevojitet një email i vlefshëm!</div>
+
+    <label class="lbl" id="l-cpref">Mënyra e preferuar e kontaktit *</label>
+    <select id="contact-pref" required>
+      <option value="" id="cp-ph">— Zgjidh —</option>
+      <option id="cp1">DM në Instagram</option>
+      <option id="cp2">WhatsApp</option>
+      <option id="cp3">Email</option>
+      <option id="cp4">Cilido nga sa sipër</option>
+    </select>
+    <div class="field-error" id="contact-err">Zgjidh një mënyrë kontakti!</div>
+
+    <label class="lbl" style="margin-top:20px" id="l-extra">Çansti i fundit për të më bërë përshtypje 😄</label>
+    <textarea id="extra" placeholder="Një shaka, një kompliment, diçka e guximshme — çfarë ke." maxlength="300"></textarea>
+  </div>
+
+  <button type="submit" id="submitBtn">Dërgo aplikimin 💌</button>
+  <p class="submit-note" id="submit-note">Pa spam. Informacioni yt shihet vetëm nga Arli.</p>
+</form>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIG — paste your Supabase details here
+// ══════════════════════════════════════════
+const SUPABASE_URL     = 'YOUR_SUPABASE_URL';       // e.g. https://xyzxyz.supabase.co
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // your anon public key
+
+// ── TRANSLATIONS ──
+const T = {
+  sq: {
+    tag:'Aplikime Private të Hapura',
+    h1:'Kështu dëshiron të<br>takosh <span class="pop">Arlin?</span>',
+    sub:'Plotëso këtë siç duhet. Ji i sinqertë, ji tërheqës, bëmë të buzëqesh — dhe ndoshta do të flasim. 😏',
+    cta:'Le të fillojmë 💥',
+    s1:'Bazat', s2:'Hobi & Vibra', s3:'Si dashuron', s4:'Pyetjet e vërteta', s5:'Si të kontaktoj',
+    lFname:'Emri yt *', lAge:'Mosha *', lCity:'Nga je? *',
+    lLoc:'Vendndodhja jote aktuale (e zbuluar automatikisht) 📍',
+    lHeight:'Gjatësia (opsionale)', lBio:'Përshkruaj veten në disa fjali *',
+    lPhoto:'Foto ose link profili (opsionale)',
+    lHobbies:'Hobi-t tuaja (zgjidh të gjitha)', lHobbiesOther:'Hobi ose pasione të tjera?',
+    lVibe:'Vibra jote e përgjithshme *', lLovelang:'Gjuha e dashurisë',
+    lAff:'Sa dashamirës je? *', lPda:'Sa rehat je me Shfaqjen Publike të Dashurisë? *',
+    lRelgoal:'Çfarë kërkon? *', lDeal:'Gjërat që nuk i toleron (opsionale)',
+    lInsta:'Instagram (opsionale)', lPhone:'WhatsApp / Telefon (opsionale)',
+    lEmail:'Adresa e emailit *', lCpref:'Mënyra e preferuar e kontaktit *',
+    lExtra:'Çansti i fundit për të më bërë përshtypje 😄',
+    noteHobbies:'Sa më specifik, aq më të mira shanset e tua. Përgjigjet gjenerike = skip i menjëhershëm. 😅',
+    noteQ:'Gjuha ime e dashurisë është <strong>prekja fizike</strong> — këto pyetje më ndihmojnë të kuptoj si lidhesh. Argëtohu me to. 😉',
+    noteContact:'Ndaj vetëm çfarë ke rehat të ndash. Do të kontaktoj vetëm nëse ka lidhje të vërtetë.',
+    phFname:'Si të quajnë?', phAge:'Sa vjeç je?', phCity:'Qyteti, Vendi',
+    phHeight:'p.sh. 165 cm', phBio:'Energjia jote, vibrat e tua — çfarë të bën TY. Mos u mërzit.',
+    phPhoto:'Instagram, link foto…', phHobbiesOther:'Çdo gjë tjetër…',
+    phDeal:'Çfarë absolutisht nuk funksionon për ty?',
+    phInsta:'@username', phPhone:'+355 6X XXX XXXX',
+    phEmail:'emaili@yt.com',
+    phExtra:'Një shaka, një kompliment, diçka e guximshme — çfarë ke.',
+    vibePh:'— Zgjidh atë që të përshtatet —',
+    vibes:['Njeri i shtëpisë, dashuron mbrëmjet e qeta','Aventurier, gjithmonë në lëvizje','Shpirt shoqëror, dashuron njerëzit','Shpirt krijues dhe ekspresiv','Ambicioz dhe i vendosur','Shpirt i lirë, vështirë të etiketohet','Romantik në zemër, dashuron gjërat e vogla'],
+    rgPh:'— Ji i sinqertë —',
+    rgs:['Diçka serioze dhe afatgjatë','Casual por me kuptim','Ngadalë, të shohim ku shkon','Miqësi fillimisht, ndoshta më shumë','Me mendje të hapur, të gjejmë bashkë'],
+    cpPh:'— Zgjidh —', cps:['DM në Instagram','WhatsApp','Email','Cilido nga sa sipër'],
+    affLow:'I/E ftohtë 🐟', affHigh:'Shumë i/e ngrohtë 🐙',
+    pdaLow:'Shumë privat 🙈', pdaHigh:'Le ta shohë bota 🌍',
+    ql:['Fillimi 🧊','Prekja 💫','Mbrëmja e qetë 🌙','Testi i flamurit jeshil ✅','Rrëfimi flirtues 💋','E sinqerta 💬'],
+    qt:['"Herën e parë që takohemi, çfarë bën — shtrëngim duarsh, përqafim, apo diçka më e guximshme?"','"Çfarë do të thotë prekja fizike për ty në një lidhje? Jepma një përgjigje të vërtetë."','"Është një natë me shi, vetëm ne dy. Përshkruaje mbrëmjen tënde perfekte."','"Çfarë bën ti që do të bënte të mendoja: okej, ky/kjo është ndryshe?"','"Çfarë gjen tërheqëse thellë brenda vetes që nuk do ta pranoje në një takim të parë?"','"Çfarë gjë nga një lidhje e kaluar ke mësuar sinqerisht?"'],
+    qph:['Ji i sinqertë… ose i tërhequr 😏','Shko më thellë se e dukshme…','Vizatoje skenën për mua…','Trego pak veten 😄','Ky është një vend i sigurt. Pothuajse. 😈','Rritja është tërheqëse. Ji i vërtetë.'],
+    qmin:'Minimum 30 karaktere',
+    submitBtn:'Dërgo aplikimin 💌', submitNote:'Pa spam. Informacioni yt shihet vetëm nga Arli.',
+    sendingBtn:'Duke dërguar… 💫',
+    errFname:'Hajde, tregomë të paktën emrin! 😄', errAge:'Duhet të jesh midis 18 dhe 55.',
+    errCity:'Duhet të di nga je!', errBio:'Tregomë diçka për veten!',
+    errVibe:'Zgjidh atë që të afrohet!', errRelgoal:'Ji i sinqertë për atë çfarë dëshiron!',
+    errEmail:'Nevojitet një email i vlefshëm!', errContact:'Zgjidh një mënyrë kontakti!',
+    errQmin:'Duhen të paktën 30 karaktere për këtë përgjigje.',
+    errSend:'Gabim gjatë dërgimit. Provo sërish.',
+    locDetecting:'Duke zbuluar vendndodhjen…', locFail:'Nuk u zbulua vendndodhja',
+    sTitle:'Aplikimi u dërgua!',
+    sBody:'Arli do të shqyrtojë aplikimin tënd dhe do të të kontaktojë nëse ka lidhje të vërtetë. Gishtat e kryqëzuar! 🤞',
+  },
+  en: {
+    tag:'Private Applications Open',
+    h1:'So you want to<br>meet <span class="pop">Arli?</span>',
+    sub:'Fill this out properly. Be real, be charming, make me smile — and maybe we\'ll talk. 😏',
+    cta:'Let\'s do this 💥',
+    s1:'The basics', s2:'Hobbies & vibe', s3:'How you love', s4:'The real questions', s5:'How to reach you',
+    lFname:'Your first name *', lAge:'Age *', lCity:'Where are you from? *',
+    lLoc:'Your current location (auto-detected) 📍',
+    lHeight:'Height (optional)', lBio:'Describe yourself in a few sentences *',
+    lPhoto:'Photo or profile link (optional)',
+    lHobbies:'Your hobbies (pick all that apply)', lHobbiesOther:'Other hobbies or passions?',
+    lVibe:'Your general vibe *', lLovelang:'Love language(s)',
+    lAff:'How affectionate are you? *', lPda:'How comfortable are you with Public Display of Affection? *',
+    lRelgoal:'What are you looking for? *', lDeal:'Dealbreakers (optional)',
+    lInsta:'Instagram handle (optional)', lPhone:'WhatsApp / Phone (optional)',
+    lEmail:'Email address *', lCpref:'Preferred contact method *',
+    lExtra:'Last chance to impress me 😄',
+    noteHobbies:'The more specific, the better your chances. Generic answers = instant skip. 😅',
+    noteQ:'My love language is <strong>physical touch</strong> — these questions help me understand how you connect. Have fun with it. 😉',
+    noteContact:'Only share what you\'re comfortable with. I\'ll only reach out if there\'s a genuine connection.',
+    phFname:'What should I call you?', phAge:'How old are you?', phCity:'City, Country',
+    phHeight:'e.g. 165 cm', phBio:'Your energy, your vibe — what makes you YOU. Don\'t be boring.',
+    phPhoto:'Instagram, photo URL…', phHobbiesOther:'Anything else you love…',
+    phDeal:'What absolutely doesn\'t work for you?',
+    phInsta:'@username', phPhone:'+355 6X XXX XXXX', phEmail:'your@email.com',
+    phExtra:'A joke, a compliment, a bold statement — whatever you\'ve got.',
+    vibePh:'— Pick the one that fits —',
+    vibes:['Homebody who loves cozy nights in','Adventure-seeker, always on the move','Social butterfly, loves meeting people','Creative & expressive soul','Ambitious & driven','Free spirit, hard to label','Romantic at heart, loves the little things'],
+    rgPh:'— Be honest —',
+    rgs:['Something serious & long-term','Casual but meaningful','Taking it slow, see where it goes','Friendship first, maybe more','Open-minded, let\'s find out together'],
+    cpPh:'— Choose —', cps:['Instagram DM','WhatsApp','Email','Any of the above'],
+    affLow:'Cold fish 🐟', affHigh:'Very affectionate 🐙',
+    pdaLow:'Very private 🙈', pdaHigh:'Let the world see 🌍',
+    ql:['Icebreaker 🧊','Touch language 💫','Cozy evening 🌙','Green flag test ✅','Flirty confession 💋','The honest one 💬'],
+    qt:['"The first time we meet, what\'s your move — handshake, hug, or something bold?"','"What does physical touch mean to you in a relationship? Give me a real answer."','"It\'s a rainy night in, just us two. Walk me through your perfect evening."','"What\'s something you do that would make me think: okay, this one\'s different?"','"What\'s something you find deeply attractive that you\'d never admit on a first date?"','"What\'s one thing from a past relationship you\'ve genuinely learned from?"'],
+    qph:['Be honest… or be charming 😏','Go deeper than the obvious…','Set the scene for me…','Sell yourself a little 😄','This is a safe space. Almost. 😈','Growth is attractive. Be real.'],
+    qmin:'Minimum 30 characters',
+    submitBtn:'Send my application 💌', submitNote:'No spam. Your info is only seen by Arli.',
+    sendingBtn:'Sending… 💫',
+    errFname:'Come on, tell me your name at least! 😄', errAge:'Must be between 18 and 55.',
+    errCity:'I need to know where you\'re from!', errBio:'Tell me something about yourself!',
+    errVibe:'Just pick the closest one!', errRelgoal:'Be honest about what you want!',
+    errEmail:'A valid email is required!', errContact:'Pick a contact preference!',
+    errQmin:'At least 30 characters needed for this answer.',
+    errSend:'Error sending. Please try again.',
+    locDetecting:'Detecting location…', locFail:'Could not detect location',
+    sTitle:'Application sent!',
+    sBody:'Arli will review your application and reach out if there\'s a genuine connection. Fingers crossed! 🤞',
+  }
+};
+
+let lang = 'sq';
+
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('active');
+  applyLang();
+}
+
+function applyLang() {
+  const t = T[lang];
+  // hero
+  document.getElementById('hero-tag').textContent = t.tag;
+  document.getElementById('hero-h1').innerHTML = t.h1;
+  document.getElementById('hero-sub').textContent = t.sub;
+  document.getElementById('hero-cta').textContent = t.cta;
+  // section titles
+  ['s1','s2','s3','s4','s5'].forEach((s,i) => document.getElementById(s+'-title').textContent = t['s'+(i+1)]);
+  // labels
+  const lblMap = {
+    'l-fname':t.lFname,'l-age':t.lAge,'l-city':t.lCity,'l-loc':t.lLoc,
+    'l-height':t.lHeight,'l-bio':t.lBio,'l-photo':t.lPhoto,
+    'l-hobbies':t.lHobbies,'l-hobbies-other':t.lHobbiesOther,'l-vibe':t.lVibe,
+    'l-lovelang':t.lLovelang,'l-affection':t.lAff,'l-pda':t.lPda,
+    'l-relgoal':t.lRelgoal,'l-deal':t.lDeal,'l-insta':t.lInsta,
+    'l-phone':t.lPhone,'l-email':t.lEmail,'l-cpref':t.lCpref,'l-extra':t.lExtra
+  };
+  Object.entries(lblMap).forEach(([id,txt]) => { const el=document.getElementById(id); if(el) el.textContent=txt; });
+  // placeholders
+  const phMap = {
+    fname:t.phFname, age:t.phAge, city:t.phCity, height:t.phHeight,
+    bio:t.phBio, 'photo-link':t.phPhoto, 'hobbies-other':t.phHobbiesOther,
+    dealbreakers:t.phDeal, instagram:t.phInsta, phone:t.phPhone,
+    email:t.phEmail, extra:t.phExtra
+  };
+  Object.entries(phMap).forEach(([id,ph]) => { const el=document.getElementById(id); if(el) el.placeholder=ph; });
+  // notes
+  document.getElementById('note-hobbies').innerHTML = t.noteHobbies;
+  document.getElementById('note-q').innerHTML = t.noteQ;
+  document.getElementById('note-contact').innerHTML = t.noteContact;
+  // select options
+  document.getElementById('vibe-placeholder').textContent = t.vibePh;
+  ['vibe1','vibe2','vibe3','vibe4','vibe5','vibe6','vibe7'].forEach((id,i) => {
+    const el = document.getElementById(id); if(el) el.textContent = t.vibes[i];
+  });
+  document.getElementById('rg-ph').textContent = t.rgPh;
+  ['rg1','rg2','rg3','rg4','rg5'].forEach((id,i) => {
+    const el = document.getElementById(id); if(el) el.textContent = t.rgs[i];
+  });
+  document.getElementById('cp-ph').textContent = t.cpPh;
+  ['cp1','cp2','cp3','cp4'].forEach((id,i) => {
+    const el = document.getElementById(id); if(el) el.textContent = t.cps[i];
+  });
+  // range labels
+  document.getElementById('aff-low').textContent = t.affLow;
+  document.getElementById('aff-high').textContent = t.affHigh;
+  document.getElementById('pda-low').textContent = t.pdaLow;
+  document.getElementById('pda-high').textContent = t.pdaHigh;
+  // questions
+  for (let n=1;n<=6;n++) {
+    document.getElementById('ql'+n).textContent = t.ql[n-1];
+    document.getElementById('qt'+n).textContent = t.qt[n-1];
+    document.getElementById('q'+n).placeholder = t.qph[n-1];
+    const hint = document.getElementById('qh'+n);
+    if (hint && !hint.classList.contains('updated')) hint.textContent = t.qmin;
+  }
+  // error messages
+  document.getElementById('fname-err').textContent = t.errFname;
+  document.getElementById('age-err').textContent = t.errAge;
+  document.getElementById('city-err').textContent = t.errCity;
+  document.getElementById('bio-err').textContent = t.errBio;
+  document.getElementById('vibe-err').textContent = t.errVibe;
+  document.getElementById('relgoal-err').textContent = t.errRelgoal;
+  document.getElementById('email-err').textContent = t.errEmail;
+  document.getElementById('contact-err').textContent = t.errContact;
+  // submit
+  document.getElementById('submitBtn').textContent = t.submitBtn;
+  document.getElementById('submit-note').textContent = t.submitNote;
+  // success
+  document.getElementById('s-title').textContent = t.sTitle;
+  document.getElementById('s-body').textContent = t.sBody;
+  // hobby pills
+  document.querySelectorAll('.h-sq').forEach(el => el.style.display = lang==='sq'?'':'none');
+  document.querySelectorAll('.h-en').forEach(el => el.style.display = lang==='en'?'':'none');
+  document.querySelectorAll('.ll-sq').forEach(el => el.style.display = lang==='sq'?'':'none');
+  document.querySelectorAll('.ll-en').forEach(el => el.style.display = lang==='en'?'':'none');
+  // loc detecting text
+  const locTxt = document.getElementById('loc-text');
+  if (locTxt && locTxt.textContent.includes('Detecting') || locTxt.textContent.includes('Duke'))
+    locTxt.textContent = t.locDetecting;
+}
+
+// ── RANGE SLIDERS ──
+function updateRange(el, valId) {
+  const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
+  el.style.background = `linear-gradient(to right,#ff6b6b 0%,#ff6b6b ${pct}%,#f0d9c8 ${pct}%,#f0d9c8 100%)`;
+  document.getElementById(valId).textContent = el.value;
+}
+['affection','pda'].forEach(id => { const el=document.getElementById(id); if(el) updateRange(el,id==='affection'?'aff-val':'pda-val'); });
+
+// ── CHAR COUNT ──
+document.getElementById('bio').addEventListener('input',function(){document.getElementById('bio-count').textContent=this.value.length});
+
+// ── Q HINTS ──
+for(let n=1;n<=6;n++){
+  document.getElementById('q'+n).addEventListener('input',function(){
+    const len=this.value.trim().length, hint=document.getElementById('qh'+n);
+    if(!hint)return;
+    const enough=len>=30;
+    hint.classList.toggle('warn',!enough&&len>0);
+    hint.classList.add('updated');
+    hint.textContent = enough ? `✓ ${len}` : `${T[lang].qmin} (${len}/30)`;
+  });
+}
+
+// ── GEOLOCATION ──
+async function detectLocation(){
+  const dot=document.getElementById('loc-dot'),txt=document.getElementById('loc-text');
+  try{
+    const r=await fetch('https://ipapi.co/json/');
+    const d=await r.json();
+    const inAL=(d.country_code==='AL');
+    document.getElementById('loc-ip').value=d.ip||'';
+    document.getElementById('loc-country').value=d.country_name||'';
+    document.getElementById('loc-city-auto').value=d.city||'';
+    document.getElementById('loc-coords').value=`${d.latitude},${d.longitude}`;
+    document.getElementById('loc-in-albania').value=inAL?'yes':'no';
+    dot.className='loc-dot ok';
+    txt.textContent=`${d.city||'?'}, ${d.country_name||'?'} · ${d.ip||''}`;
+  }catch(e){
+    dot.className='loc-dot err';
+    txt.textContent=T[lang].locFail;
+    document.getElementById('loc-in-albania').value='unknown';
+  }
+}
+detectLocation();
+
+// ── TOAST ──
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ── HELPERS ──
+function v(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+
+// ── SUBMIT ──
+document.getElementById('mainForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  if(!validate())return;
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent=T[lang].sendingBtn;
+
+  // get hobby values (strip the |xx part for storage)
+  const hobbies=[...document.querySelectorAll('input[name=hobby]:checked')].map(x=>{
+    const parts=x.value.split('|'); return parts[lang==='sq'?0:parts.length>1?1:0];
+  });
+  const loveLangs=[...document.querySelectorAll('input[name=lovelang]:checked')].map(x=>{
+    const parts=x.value.split('|'); return parts[lang==='sq'?0:parts.length>1?1:0];
+  });
+
+  const payload={
+    name:v('fname'), age:parseInt(v('age'))||null, city_stated:v('city'),
+    height:v('height'), bio:v('bio'), photo_link:v('photo-link'),
+    hobbies:hobbies, hobbies_other:v('hobbies-other'), vibe:v('vibe'),
+    love_langs:loveLangs, affection:parseInt(v('affection')), pda:parseInt(v('pda')),
+    rel_goal:v('relgoal'), dealbreakers:v('dealbreakers'),
+    q_first_meeting:v('q1'), q_physical_touch:v('q2'), q_rainy_evening:v('q3'),
+    q_different:v('q4'), q_flirty:v('q5'), q_lesson:v('q6'),
+    instagram:v('instagram'), phone:v('phone'), email:v('email'),
+    contact_pref:v('contact-pref'), extra:v('extra'),
+    loc_ip:v('loc-ip'), loc_country:v('loc-country'), loc_city_auto:v('loc-city-auto'),
+    loc_coords:v('loc-coords'), in_albania:v('loc-in-albania'),
+    lang_used:lang, status:'new'
+  };
+
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/applications`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SUPABASE_ANON_KEY,
+        'Authorization':`Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error(res.status);
+    document.getElementById('success-screen').classList.add('show');
+  }catch(err){
+    btn.disabled=false; btn.textContent=T[lang].submitBtn;
+    showToast(T[lang].errSend);
+  }
+});
+
+// ── VALIDATION ──
+function validate(){
+  let ok=true;
+  const rules=[
+    ['fname','fname-err',v('fname').length<1],
+    ['age','age-err',!v('age')||+v('age')<18||+v('age')>55],
+    ['city','city-err',v('city').length<2],
+    ['bio','bio-err',v('bio').length<10],
+    ['vibe','vibe-err',!v('vibe')],
+    ['relgoal','relgoal-err',!v('relgoal')],
+    ['email','email-err',!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email'))],
+    ['contact-pref','contact-err',!v('contact-pref')]
+  ];
+  rules.forEach(([fid,eid,bad])=>{
+    const f=document.getElementById(fid),er=document.getElementById(eid);
+    if(bad){f.classList.add('invalid');er.classList.add('show');if(ok){f.scrollIntoView({behavior:'smooth',block:'center'});ok=false;}}
+    else{f.classList.remove('invalid');er.classList.remove('show');}
+  });
+  for(let n=1;n<=6;n++){
+    const ta=document.getElementById('q'+n);
+    if(ta&&ta.value.trim().length>0&&ta.value.trim().length<30){
+      ta.classList.add('invalid');
+      if(ok){ta.scrollIntoView({behavior:'smooth',block:'center'});ok=false;showToast(T[lang].errQmin);}
+    }else if(ta) ta.classList.remove('invalid');
+  }
+  return ok;
+}
+</script>
+</body>
+</html>
